@@ -8,7 +8,7 @@
 #include "serialize.h"
 #include "constants.h"
 
-#define PORT_NAME			"/dev/ttyACM1"
+#define PORT_NAME			"/dev/ttyACM0"
 #define BAUD_RATE			B9600
 
 int exitFlag=0;
@@ -44,7 +44,12 @@ void handleStatus(TPacket *packet)
 	printf("Right Reverse Ticks Turns:\t%d\n", packet->params[7]);
 	printf("Forward Distance:\t\t%d\n", packet->params[8]);
 	printf("Reverse Distance:\t\t%d\n", packet->params[9]);
-	printf("\n---------------------------------------\n\n");
+	printf("IR READING 1:\t\t\t%d\n", packet->params[10]);
+	printf("IR READING 2:\t\t\t%d\n", packet->params[11]);
+    printf("ULTRASONIC READING:\t\t%d\n", packet->params[12]);
+    printf("RED:\t\t\t\t%d\n", packet->params[13]);
+    printf("GREEN:\t\t\t\t%d\n", packet->params[14]);
+    printf("\n---------------------------------------\n\n");
 }
 
 void handleResponse(TPacket *packet)
@@ -52,7 +57,8 @@ void handleResponse(TPacket *packet)
 	// The response code is stored in command
 	switch(packet->command)
 	{
-		case RESP_OK:
+	
+    case RESP_OK:
 			printf("Command OK\n");
 		break;
 
@@ -166,10 +172,13 @@ void flushInput()
 
 void getParams(TPacket *commandPacket)
 {
-	printf("Enter distance/angle in cm/degrees (e.g. 50) and power in %% (e.g. 75) separated by space.\n");
-	printf("E.g. 50 75 means go at 50 cm at 75%% power for forward/backward, or 50 degrees left or right turn at 75%%  power\n");
-	scanf("%d %d", &commandPacket->params[0], &commandPacket->params[1]);
-	flushInput();
+	//printf("Enter distance/angle in cm/degrees (e.g. 50) and power in %% (e.g. 75) separated by space.\n");
+	//printf("E.g. 50 75 means go at 50 cm at 75%% power for forward/backward, or 50 degrees left or right turn at 75%%  power\n");
+//	scanf("%d %d", &commandPacket->params[0], &commandPacket->params[1]);
+//	commandPacket->params[0] = 10;
+//	commandPacket->params[1] = 90;
+    
+    flushInput();
 }
 
 void sendCommand(char command)
@@ -182,29 +191,37 @@ void sendCommand(char command)
 	{
 		case 'f':
 		case 'F':
-			getParams(&commandPacket);
-			commandPacket.command = COMMAND_FORWARD;
+			//getParams(&commandPacket);
+            commandPacket.command = COMMAND_FORWARD;
+			commandPacket.params[0] = 10;
+			commandPacket.params[1] = 90;
 			sendPacket(&commandPacket);
 			break;
 
 		case 'b':
 		case 'B':
-			getParams(&commandPacket);
-			commandPacket.command = COMMAND_REVERSE;
+			//getParams(&commandPacket);
+	    	commandPacket.params[0] = 10;
+			commandPacket.params[1] = 90;
+            commandPacket.command = COMMAND_REVERSE;
 			sendPacket(&commandPacket);
 			break;
 
 		case 'l':
 		case 'L':
-			getParams(&commandPacket);
-			commandPacket.command = COMMAND_TURN_LEFT;
-			sendPacket(&commandPacket);
+			//getParams(&commandPacket);
+	    	commandPacket.params[0] = 10;
+	    	commandPacket.params[1] = 90;
+            commandPacket.command = COMMAND_TURN_LEFT;
+            sendPacket(&commandPacket);
 			break;
 
 		case 'r':
 		case 'R':
-			getParams(&commandPacket);
-			commandPacket.command = COMMAND_TURN_RIGHT;
+			//getParams(&commandPacket);
+			commandPacket.params[0] = 10;
+            commandPacket.params[1] = 90;
+            commandPacket.command = COMMAND_TURN_RIGHT;
 			sendPacket(&commandPacket);
 			break;
 
