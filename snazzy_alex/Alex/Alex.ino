@@ -1,3 +1,4 @@
+
 #include <serialize.h>
 #include <stdarg.h>
 #include "packet.h"
@@ -27,7 +28,7 @@ volatile TDirection dir = STOP;
 // We will use this to calculate forward/backward distance traveled 
 // by taking revs * WHEEL_CIRC
 
-#define WHEEL_CIRC         15.7
+#define WHEEL_CIRC         20.4
 
 // Motor control pins. You need to adjust these till
 // Alex moves in the correct direction
@@ -37,8 +38,8 @@ volatile TDirection dir = STOP;
 #define RR                  11  // Right reverse pin
 
 
-#define ALEX_LENGTH      16
-#define ALEX_BREADTH     6
+#define ALEX_LENGTH      17
+#define ALEX_BREADTH     12.5
 
 float alexDiagonal = 0.0;
 float alexCirc = 0.0;
@@ -57,6 +58,13 @@ volatile unsigned long leftForwardTicksTurns;
 volatile unsigned long rightForwardTicksTurns;
 volatile unsigned long leftReverseTicksTurns; 
 volatile unsigned long rightReverseTicksTurns;
+
+volatile unsigned long ir_reading1;
+volatile unsigned long ir_reading2;
+volatile unsigned long ultra_reading;
+volatile unsigned long red_reading;
+volatile unsigned long green_reading;
+
 // Store the revolutions on Alex's left
 // and right wheels
 volatile unsigned long leftRevs;
@@ -70,6 +78,25 @@ unsigned long deltaDist;
 unsigned long newDist;
 unsigned long deltaTicks;
 unsigned long targetTicks;
+
+
+//IR Sensor
+int IRSensor = A5; //Analog pin A1 for ___ IR Sensor
+int IRSensor2 = A2; // Analog pin A2 for ___ IR Sensor
+
+//Ultrasonic Sensor
+#define echoPin 9 // attach pin 8 Arduino to pin Echo of HC-SR04
+#define trigPin 8 //attach pin 9 Arduino to pin Trig of HC-SR04
+long duration; // variable for the duration of sound wave travel
+int distance; // variable for the distance measurement
+
+//Color Test
+#define S0 1 
+#define S1 4
+#define S2 7
+#define S3 12
+#define sensorOut 13
+int frequency = 0;
 
 /*
  * 
@@ -119,6 +146,11 @@ void sendStatus()
   statusPacket.params[7] = rightReverseTicksTurns;
   statusPacket.params[8] = forwardDist;
   statusPacket.params[9] = reverseDist;
+  statusPacket.params[10] = ir_reading1;
+  statusPacket.params[11] = ir_reading2;
+  statusPacket.params[12] = ultra_reading;
+  statusPacket.params[13] = red_reading;
+  statusPacket.params[14] = green_reading;
 
   sendResponse(&statusPacket);
 }
@@ -175,7 +207,7 @@ void sendBadCommand()
   badCommand.packetType=PACKET_TYPE_ERROR;
   badCommand.command=RESP_BAD_COMMAND;
   sendResponse(&badCommand);
-
+  
 }
 
 void sendBadResponse()
@@ -281,11 +313,12 @@ void setupEINT()
 
 ISR(INT0_vect){
   leftISR();
+  //SensorTest();
 }
 
 ISR(INT1_vect){
   rightISR();
-  
+  //SensorTest();
 }
 
 // Implement INT0 and INT1 ISRs above.
@@ -588,6 +621,11 @@ void handleCommand(TPacket *command)
         clearOneCounter(command->params[7]);
         clearOneCounter(command->params[8]);
         clearOneCounter(command->params[9]);
+        clearOneCounter(command->params[10]);
+        clearOneCounter(command->params[11]);
+        clearOneCounter(command->params[12]);
+        clearOneCounter(command->params[13]);
+        clearOneCounter(command->params[14]);
         break;
         /*
      * Implement code for other commands here.
@@ -643,6 +681,22 @@ void setup() {
 
   alexCirc = PI * alexDiagonal;
 
+  pinMode(IRSensor, INPUT);
+  pinMode(IRSensor2, INPUT);
+
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
+
+  pinMode(S0, OUTPUT);
+  pinMode(S1, OUTPUT);
+  pinMode(S2, OUTPUT);
+  pinMode(S3, OUTPUT);
+  pinMode(sensorOut, INPUT);
+  digitalWrite(S0, HIGH);
+  digitalWrite(S1, LOW);
+  
+  Serial.begin(9600);
+  
   cli();
   setupEINT();
   setupSerial();
@@ -676,6 +730,59 @@ void handlePacket(TPacket *packet)
   }
 }
 
+
+void SensorTest(){
+  int ir_reading = digitalRead (IRSensor);
+  int ir_reading2 = digitalRead (IRSensor2);
+  
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  // Sets the trigPin HIGH (ACTIVE) for 10 microseconds
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  // Reads the echoPin, returns the sound wave travel time in microseconds
+  duration = pulseIn(echoPin, HIGH);
+  // Calculating the distance
+  ultra_reading = duration * 0.034 / 2; // Speed of sound wave divided by 2 (go and back)
+  // Displays the distance on the Serial Monitor
+/*
+  Serial.print(ir_reading1);
+  Serial.print(" ");
+  Serial.println(ir_reading2);
+  Serial.print ("Distance: ");
+  Serial.print(ultra_reading);
+  Serial.println(" cm");
+  */
+  digitalWrite(S2,LOW);
+  digitalWrite(S3,LOW);
+  // Reading the output frequency
+  red_reading = pulseIn(sensorOut, LOW);
+  //Remaping the value of the frequency to the RGB Model of 0 to 255
+  red_reading = map(red_reading, 50,110,255,0);
+  // Printing the value on the serial monitor
+  /*Serial.print("R= ");
+  Serial.print(red_reading);
+  Serial.print(" ");
+  delay(100);*/
+  // Setting Green filtered photodiodes to be read
+  digitalWrite(S2,HIGH);
+  digitalWrite(S3,HIGH);
+  // Reading the output frequency
+  green_reading = pulseIn(sensorOut, LOW);
+  //Remaping the value of the frequency to the RGB Model of 0 to 255
+  //green_reading = map(green_reading, 90,130,255,0);
+  // Printing the value on the serial monitor
+  /*Serial.print("G= ");
+  Serial.print(green_reading);
+  Serial.print(" ");
+  
+  delay(100);
+  */
+}
+
+
+
 void loop() {
 
 // Uncomment the code below for Step 2 of Activity 3 in Week 8 Studio 2
@@ -690,6 +797,7 @@ void loop() {
 
   TResult result = readPacket(&recvPacket);
 
+  SensorTest();
   
   if(result == PACKET_OK)
     handlePacket(&recvPacket);
@@ -749,4 +857,5 @@ void loop() {
         }
       }
     }
+
   
