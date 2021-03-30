@@ -1,5 +1,5 @@
 #ifndef __SERIALIZE__
-#define __SERIALIZE__
+#define SERIALIZE
 
 #include <stdlib.h>
 
