@@ -172,11 +172,12 @@ void flushInput()
 
 void getParams(TPacket *commandPacket)
 {
-	//printf("Enter distance/angle in cm/degrees (e.g. 50) and power in %% (e.g. 75) separated by space.\n");
-	//printf("E.g. 50 75 means go at 50 cm at 75%% power for forward/backward, or 50 degrees left or right turn at 75%%  power\n");
+//	printf("Enter distance/angle in cm/degrees (e.g. 50) and power in %% (e.g. 75) separated by space.\n");
+///	printf("E.g. 50 75 means go at 50 cm at 75%% power for forward/backward, or 50 degrees left or right turn at 75%%  power\n");
 //	scanf("%d %d", &commandPacket->params[0], &commandPacket->params[1]);
 //	commandPacket->params[0] = 10;
-//	commandPacket->params[1] = 90;
+
+//commandPacket->params[1] = 90;
     
     flushInput();
 }
@@ -191,27 +192,28 @@ void sendCommand(char command)
 	{
 		case 'f':
 		case 'F':
-			//getParams(&commandPacket);
-            commandPacket.command = COMMAND_FORWARD;
+//			getParams(&commandPacket);
 			commandPacket.params[0] = 10;
-			commandPacket.params[1] = 90;
-			sendPacket(&commandPacket);
+			commandPacket.params[1] = 100;
+            commandPacket.command = COMMAND_FORWARD;
+            sendPacket(&commandPacket);
+
 			break;
 
 		case 'b':
 		case 'B':
 			//getParams(&commandPacket);
 	    	commandPacket.params[0] = 10;
-			commandPacket.params[1] = 90;
+			commandPacket.params[1] = 100;
             commandPacket.command = COMMAND_REVERSE;
-			sendPacket(&commandPacket);
+            sendPacket(&commandPacket);
 			break;
 
 		case 'l':
 		case 'L':
 			//getParams(&commandPacket);
 	    	commandPacket.params[0] = 10;
-	    	commandPacket.params[1] = 90;
+	    	commandPacket.params[1] = 100;
             commandPacket.command = COMMAND_TURN_LEFT;
             sendPacket(&commandPacket);
 			break;
@@ -220,7 +222,7 @@ void sendCommand(char command)
 		case 'R':
 			//getParams(&commandPacket);
 			commandPacket.params[0] = 10;
-            commandPacket.params[1] = 90;
+            commandPacket.params[1] = 100;
             commandPacket.command = COMMAND_TURN_RIGHT;
 			sendPacket(&commandPacket);
 			break;
