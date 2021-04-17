@@ -257,15 +257,14 @@ void enablePullups()
 // Functions to be called by INT0 and INT1 ISRs.
 void leftISR()
 {
- 
 
   if(dir == FORWARD){
      leftForwardTicks++;
-     forwardDist = (unsigned long) ((float) leftForwardTicks /  COUNTS_PER_REV * WHEEL_CIRC);
+     
   }
   if(dir == BACKWARD){
     leftReverseTicks++;
-    reverseDist = (unsigned long) ((float) leftReverseTicks /  COUNTS_PER_REV * WHEEL_CIRC);
+    
   }
   if(dir == LEFT){
     leftReverseTicksTurns++;
@@ -280,11 +279,11 @@ void rightISR()
 {
   if(dir == FORWARD){
      rightForwardTicks++;
-    
+     forwardDist = (unsigned long) ((float) rightForwardTicks /  COUNTS_PER_REV * WHEEL_CIRC);
   }
   if(dir == BACKWARD){
     rightReverseTicks++;
-    
+    reverseDist = (unsigned long) ((float) rightReverseTicks /  COUNTS_PER_REV * WHEEL_CIRC);
   }
   if(dir == LEFT){
     rightForwardTicksTurns++;
@@ -443,7 +442,7 @@ void forward(float dist, float speed)
   // RF = Right forward pin, RR = Right reverse pin
   // This will be replaced later with bare-metal code.
   
-  analogWrite(LF, val*0.9 );
+  analogWrite(LF, val );
   analogWrite(RF, val);
   analogWrite(LR,0);
   analogWrite(RR, 0);
@@ -478,7 +477,7 @@ void reverse(float dist, float speed)
   // LF = Left forward pin, LR = Left reverse pin
   // RF = Right forward pin, RR = Right reverse pin
   // This will be replaced later with bare-metal code.
-  analogWrite(LR, val*0.9);
+  analogWrite(LR, val);
   analogWrite(RR, val);
   analogWrite(LF, 0);
   analogWrite(RF, 0);
@@ -538,8 +537,8 @@ void right(float ang, float speed)
   // We will also replace this code with bare-metal later.
   // To turn right we reverse the right wheel and move
   // the left wheel forward.
-  analogWrite(RR, val);
-  analogWrite(LF, val*0.9);
+  analogWrite(RR, val*0.95);
+  analogWrite(LF, val);
   analogWrite(LR, 0);
   analogWrite(RF, 0);
 }

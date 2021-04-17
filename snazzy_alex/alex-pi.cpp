@@ -200,6 +200,16 @@ void sendCommand(char command)
 
 			break;
 
+        case 'p':
+		case 'P':
+//			getParams(&commandPacket);
+			commandPacket.params[0] = 5;
+			commandPacket.params[1] = 100;
+            commandPacket.command = COMMAND_FORWARD;
+            sendPacket(&commandPacket);
+
+			break;
+
 		case 'b':
 		case 'B':
 			//getParams(&commandPacket);
@@ -217,12 +227,26 @@ void sendCommand(char command)
             commandPacket.command = COMMAND_TURN_LEFT;
             sendPacket(&commandPacket);
 			break;
+		
+		case '4':
+	    	commandPacket.params[0] = 20;
+	    	commandPacket.params[1] = 100;
+            commandPacket.command = COMMAND_TURN_LEFT;
+            sendPacket(&commandPacket);
+			break;
 
 		case 'r':
 		case 'R':
 			//getParams(&commandPacket);
 			commandPacket.params[0] = 10;
-            commandPacket.params[1] = 100;
+            commandPacket.params[1] = 90;
+            commandPacket.command = COMMAND_TURN_RIGHT;
+			sendPacket(&commandPacket);
+			break;
+		
+        case '2':
+			commandPacket.params[0] = 20;
+            commandPacket.params[1] = 90;
             commandPacket.command = COMMAND_TURN_RIGHT;
 			sendPacket(&commandPacket);
 			break;
@@ -250,6 +274,26 @@ void sendCommand(char command)
 		case 'Q':
 			exitFlag=1;
 			break;
+
+        case 'e':
+           	commandPacket.params[0] =175;
+			commandPacket.params[1] = 100;
+            commandPacket.command = COMMAND_FORWARD;
+            sendPacket(&commandPacket);
+            break;
+         
+         case '1':
+           	commandPacket.params[0] =100;
+			commandPacket.params[1] = 100;
+            commandPacket.command = COMMAND_FORWARD;
+            sendPacket(&commandPacket);
+            break;
+         case '3':
+           	commandPacket.params[0] =50;
+			commandPacket.params[1] = 100;
+            commandPacket.command = COMMAND_REVERSE;
+            sendPacket(&commandPacket);
+            break;
 
 		default:
 			printf("Bad command\n");
@@ -283,11 +327,12 @@ int main()
 		char ch;
 		printf("Command (f=forward, b=reverse, l=turn left, r=turn right, s=stop, c=clear stats, g=get stats q=exit)\n");
 		scanf("%c", &ch);
-
+        
 		// Purge extraneous characters from input stream
 		flushInput();
 
 		sendCommand(ch);
+
 	}
 
 	printf("Closing connection to Arduino.\n");
