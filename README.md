@@ -1,6 +1,6 @@
-# CG1112 Engineering Principles & Practices II: Alex Robot Project, Year 1, Academic Year 2020-2021, Semester 2, National University of Singapore
+# CG1112 Engineering Principles & Practices II: Alex Robot Project Group B04 2B, Year 1, Academic Year 2020-2021, Semester 2, National University of Singapore
 
-We are Group B04 2B. We developed a cloud-controlled Search & Rescue (SAR) robot named Alex, using the Arduino Uno board (ATmega328P) as part of CG1112, configuring it to map and navigate uncertain terrain with LiDAR. The robot was programmed to retrieve mapping data over a Secure Shell Protocol (SSH) network onto a Robot Operating System (ROS), enabling efficient remote operation. The robot was meant to follow an obstacle course remotely via an Xbox controller, map its environment, detect a colour, and park successfully.  
+We developed a cloud-controlled Search & Rescue (SAR) robot named Alex, using the Arduino Uno board (ATmega328P) as part of CG1112, configuring it to map and navigate uncertain terrain with LiDAR. The robot was programmed to retrieve mapping data over a Secure Shell Protocol (SSH) network onto a Robot Operating System (ROS), enabling efficient remote operation. The robot was meant to follow an obstacle course remotely via an Xbox controller, map its environment, detect a colour, and park successfully.  
 
 ![image](https://github.com/user-attachments/assets/fa84e83a-5bc9-4066-9af4-428d42969587)
 
